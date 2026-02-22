@@ -10,8 +10,9 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+
 html {
-  font-family: sans-serif;
+  font-family: vazirmatn;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
 }
@@ -53,6 +54,10 @@ audio:not([controls]) {
 template {
   display: none;
 }
+
+/* p, h1, h2, h3, h4, h5, h6 {
+  direction: rtl;
+} */
 
 a {
   background-color: transparent;
