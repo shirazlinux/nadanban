@@ -7,7 +7,6 @@
 ; (optional) set a project name to be displayed on the website
 name = "نادان‌بان"
 
-
 short_code_enabled = true
 short_code_db_dsn = "mysql:host=localhost;dbname=sudoshzi_privatebin;charset=utf8mb4"
 short_code_db_username = "sudoshzi_privatebin"
