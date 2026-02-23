@@ -1,4 +1,5 @@
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/sudoshzi/public_html/nadan/
-    - /bin/rsync -avz --delete --exclude='.git' * $DEPLOYPATH
+    - export DEPLOYPATH=/home/sudoshzi/public_html/nadan
+    - /bin/cp -r * $DEPLOYPATH
+
