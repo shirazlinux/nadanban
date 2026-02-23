@@ -1,0 +1,4 @@
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/sudoshzi/public_html/nadan
+    - /bin/rsync -avz --exclude='.git' --exclude='.cpanel.yml' * $DEPLOYPATH
