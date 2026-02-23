@@ -1,7 +1,6 @@
 # Ignore server files for safety
 .htaccess
 .htpasswd
-cfg/*
 !cfg/.htaccess
 
 # Ignore data/
