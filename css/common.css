@@ -8,6 +8,18 @@
  * @license   https://www.opensource.org/licenses/zlib-license.php The zlib/libpng License
  */
 
+#nickname::placeholder {
+	direction: rtl !important;
+	text-align: right;
+
+}
+
+#passwordinput::placeholder {
+	direction: rtl;
+	text-align: right;
+
+}
+
 #attachmentPreview {
 	display: flex;
 	flex-direction: column;

@@ -17,6 +17,13 @@
     font-style: normal;
     font-display: swap;
 }
+@font-face {
+    font-family: 'vazirmatnfd';
+    src: url('fonts/Vazirmatn-RD-FD-Bold.ttf') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
 
 
 body, button, input, textarea {
