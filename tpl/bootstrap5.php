@@ -485,10 +485,10 @@ endif;
 							<svg id="copyIcon" fill="currentColor" aria-hidden="true"><use href="img/bootstrap-icons.svg#copy" /></svg>
 							<svg id="copySuccessIcon" class="text-success" fill="currentColor" aria-hidden="true"><use href="img/bootstrap-icons.svg#check" /></svg>
 						</button>
-						<pre id="prettyprint" class="card-body col-md-12 prettyprint linenums:1"></pre>
+						<pre id="prettyprint" dir="auto" class="card-body col-md-12 prettyprint linenums:1"></pre>
 					</div>
 					<div id="plaintext" class="col-md-12 hidden"></div>
-					<p class="col-md-12"><textarea id="message" name="message" cols="80" rows="25" aria-label="<?php echo I18n::_('Document text'); ?>" tabindex="1" class="form-control hidden"></textarea></p>
+					<p class="col-md-12"><textarea id="message" dir="auto" name="message" cols="80" rows="25" aria-label="<?php echo I18n::_('Document text'); ?>" tabindex="1" class="form-control hidden"></textarea></p>
 					<p class="col-md-12 form-check form-switch">
 						<input id="messagetab" type="checkbox" tabindex="3" class="form-check-input" checked="checked" />
 						<label for="messagetab" class="form-check-label">
@@ -498,8 +498,8 @@ endif;
 				</article>
 			</section>
 			<section class="container-fluid">
-				<div id="discussion" class="hidden">
-					<h4><?php echo I18n::_('Discussion'); ?></h4>
+				<div id="discussion" dir="auto" class="hidden">
+					<h4 dir="auto"><?php echo I18n::_('Discussion'); ?></h4>
 					<div id="commentcontainer"></div>
 				</div>
 			</section>
@@ -540,8 +540,8 @@ endif;
 					<button class="btn btn-secondary btn-sm"><?php echo I18n::_('Add comment'); ?></button>
 				</p>
 				<div id="replytemplate" class="reply hidden">
-					<input type="text" id="nickname" class="form-control my-2" title="<?php echo I18n::_('Optional nickname…'); ?>" placeholder="<?php echo I18n::_('Optional nickname…'); ?>" />
-					<textarea id="replymessage" class="replymessage form-control" cols="80" rows="7"></textarea><br />
+					<input type="text" id="nickname" dir="auto" class="form-control my-2" title="<?php echo I18n::_('Optional nickname…'); ?>" placeholder="<?php echo I18n::_('Optional nickname…'); ?>" />
+					<textarea id="replymessage" dir="auto" class="replymessage form-control" cols="80" rows="7"></textarea><br />
 					<div id="replystatus" role="alert" class="statusmessage hidden alert">
 						<svg width="16" height="16" fill="currentColor" aria-hidden="true"><use href="img/bootstrap-icons.svg#info-circle" /></svg>
 					</div>
