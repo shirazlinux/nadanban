@@ -629,7 +629,7 @@ endif;
 						</button>
 						<pre id="prettyprint" class="col-md-12 prettyprint linenums:1"></pre>
 					</div>
-					<div id="plaintext" class="col-md-12 hidden"></div>
+					<div id="plaintext" dir="auto" class="col-md-12 hidden"></div>
 					<p class="col-md-12"><textarea id="message" name="message" cols="80" rows="25" tabindex="1" class="form-control hidden"></textarea></p>
 					<p class="col-md-12 checkbox">
 						<label>
