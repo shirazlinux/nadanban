@@ -150,10 +150,11 @@ if ($EMAIL) :
 <?php
 endif;
 ?>
-		<nav class="navbar navbar-expand-lg bg-body-tertiary text-nowrap mb-3">
+		<nav class="navbar navbar-expand-lg bg-body-tertiary text-nowrap mb-3 nadan-navbar">
 			<div class="container-fluid">
-				<a class="reloadlink navbar-brand" href="">
-					<img alt="<?php echo I18n::_($NAME); ?>" src="img/icon.svg" height="38" />
+				<a class="reloadlink navbar-brand d-flex align-items-center gap-2" href="">
+					<img alt="<?php echo I18n::_($NAME); ?>" src="img/icon.svg" height="36" width="36" class="nadan-brand-icon" />
+					<span class="nadan-brand-text d-none d-sm-inline"><?php echo I18n::_($NAME); ?></span>
 				</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="<?php echo I18n::_('Toggle navigation'); ?>">
 					<span class="navbar-toggler-icon"></span>
@@ -515,19 +516,29 @@ endif;
 				</div>
 			</section>
 		</main>
-		<footer class="container-fluid mt-auto">
-			<div class="row">
-				<h5 class="col-md-5 col-xs-8"><?php echo I18n::_($NAME); ?> <small>- <?php echo I18n::_('Because ignorance is bliss'); ?></small></h5>
-				<p class="col-md-1 col-xs-4 text-center"><?php echo $VERSION; ?></p>
-				<p id="aboutbox" class="col-md-6 col-xs-12">
-					<?php echo sprintf(
-                        I18n::_('%s is a minimalist, open source online pastebin where the server has zero knowledge of stored data. Data is encrypted/decrypted %sin the browser%s using 256 bits AES.',
-                            I18n::_($NAME),
-                            '%s', '%s'
-                        ),
-                        '<i>', '</i>'), ' ', $INFO, PHP_EOL;
-                    ?>
-				</p>
+		<footer class="nadan-footer mt-auto">
+			<div class="container-fluid">
+				<div class="nadan-footer-inner">
+					<div class="nadan-footer-top">
+						<div class="nadan-footer-brand">
+							<img src="img/icon.svg" alt="" width="28" height="28" class="nadan-footer-icon" aria-hidden="true" />
+							<div class="nadan-footer-titles">
+								<span class="nadan-footer-name"><?php echo I18n::_($NAME); ?></span>
+								<span class="nadan-footer-tagline"><?php echo I18n::_('Because ignorance is bliss'); ?></span>
+							</div>
+						</div>
+						<span class="nadan-footer-version" title="PrivateBin"><?php echo I18n::encode($VERSION); ?></span>
+					</div>
+					<p id="aboutbox" class="nadan-footer-about">
+						<?php echo sprintf(
+                            I18n::_('%s is a minimalist, open source online pastebin where the server has zero knowledge of stored data. Data is encrypted/decrypted %sin the browser%s using 256 bits AES.',
+                                I18n::_($NAME),
+                                '%s', '%s'
+                            ),
+                            '<em>', '</em>'), ' ', $INFO, PHP_EOL;
+                        ?>
+					</p>
+				</div>
 			</div>
 		</footer>
 		<div id="serverdata" class="hidden" aria-hidden="true">
