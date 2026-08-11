@@ -62,6 +62,20 @@ jQuery.PrivateBin = (function($) {
     };
 
     /**
+     * DOMpurify settings for HTML content, where only a strict subset is allowed.
+     *
+     * NOTE: The key {@link purifyHtmlConfig.USE_PROFILES} **must not** be included,
+     * as otherwise `USE_PROFILES` takes precedence over {@link purifyHtmlConfigStrictSubset.ALLOWED_TAGS}.
+     *
+     * @private
+     */
+   const purifyHtmlConfigStrictSubset = {
+        ALLOWED_URI_REGEXP: purifyHtmlConfig.ALLOWED_URI_REGEXP,
+        ALLOWED_TAGS: ['a', 'i', 'span', 'kbd'],
+        ALLOWED_ATTR: ['href', 'id']
+    };
+
+    /**
      * DOMpurify settings for SVG content
      *
      * @private
@@ -430,8 +444,9 @@ jQuery.PrivateBin = (function($) {
          * @name   Helper.urls2links
          * @function
          * @param  {HTMLElement} element
+         * @param  {bool} strict - optional
          */
-        me.urls2links = function(element)
+        me.urls2links = function(element, strict = true)
         {
             element.html(
                 DOMPurify.sanitize(
@@ -439,7 +454,7 @@ jQuery.PrivateBin = (function($) {
                         /(((https?|ftp):\/\/[\w?!=&.\/-;#@~%+*-]+(?![\w\s?!&.\/;#~%"=-]>))|((magnet):[\w?=&.\/-;#@~%+*-]+))/ig,
                         '<a href="$1" rel="nofollow noopener noreferrer">$1</a>'
                     ),
-                    purifyHtmlConfig
+                    strict ? purifyHtmlConfigStrictSubset : purifyHtmlConfig
                 )
             );
         };
@@ -814,12 +829,7 @@ jQuery.PrivateBin = (function($) {
 
             if (containsHtml) {
                 // only allow tags/attributes we actually use in translations
-                output = DOMPurify.sanitize(
-                    output, {
-                        ALLOWED_TAGS: ['a', 'i', 'span', 'kbd'],
-                        ALLOWED_ATTR: ['href', 'id']
-                    }
-                );
+                output = DOMPurify.sanitize(output, purifyHtmlConfigStrictSubset);
             }
 
             // if $element is given, insert translation
@@ -966,13 +976,9 @@ jQuery.PrivateBin = (function($) {
          * @returns {boolean}
          */
         function isStringContainsHtml(messageId) {
-            // An integer which specifies the type of the node. An Element node like <p> or <div>.
-            const elementNodeType = 1;
-
-            const div = document.createElement('div');
-            div.innerHTML = messageId;
-
-            return Array.from(div.childNodes).some(node => node.nodeType === elementNodeType);
+            // message IDs are allowed to contain anchors, spans, keyboard and emphasis tags
+            // we can recognize all of them by only checking for anchors and keyboard tags
+            return messageId.indexOf('<a') !== -1 || messageId.indexOf('<kbd') !== -1;
         }
 
         return me;
@@ -2314,6 +2320,10 @@ jQuery.PrivateBin = (function($) {
             $loadconfirmClose.off('click.close');
             $loadconfirmClose.on('click.close', Controller.newPaste);
 
+            $loadconfirmmodal.on('shown.bs.modal', () => {
+                $loadconfirmOpenNow.trigger('focus');
+            });
+
             if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip.VERSION) {
                 (new bootstrap.Modal($loadconfirmmodal[0])).show();
             } else {
@@ -2741,7 +2751,7 @@ jQuery.PrivateBin = (function($) {
                     // = 'plaintext'
                     $prettyPrint.text(text);
                 }
-                Helper.urls2links($prettyPrint);
+                Helper.urls2links($prettyPrint, format !== 'syntaxhighlighting');
                 $prettyPrint.css('white-space', 'pre-wrap');
                 $prettyPrint.css('word-break', 'normal');
                 $prettyPrint.removeClass('prettyprint');
@@ -2987,11 +2997,18 @@ jQuery.PrivateBin = (function($) {
 
             const mimeType = me.getAttachmentMimeType(attachmentData);
 
+            // We explicitly do _not_ use the original mime type for the download link
+            // to always force a download instead of potentially dangerous browser rendering/parsing/interpretation
+            let safeMimeType = 'application/octet-stream';
+            if (me.isSafeMimeType(mimeType)) {
+                safeMimeType = mimeType;
+            }
+
             // extract data and convert to binary
             const rawData = attachmentData.substring(base64Start);
             const decodedData = rawData.length > 0 ? atob(rawData) : '';
 
-            let blobUrl = getBlobUrl(decodedData, mimeType);
+            let blobUrl = getBlobUrl(decodedData, safeMimeType);
             attachmentLink.attr('href', blobUrl);
 
             if (typeof fileName !== 'undefined') {
@@ -3020,6 +3037,28 @@ jQuery.PrivateBin = (function($) {
 
             me.handleBlobAttachmentPreview($attachmentPreview, blobUrl, mimeType);
         };
+
+
+        /**
+         * Evaluates whether this is known a safe mime type.
+         *
+         * This means, the media can safely be displayed and e.g. no XSS should be possible.
+         * 
+         * @name AttachmentViewer.isSafeMimeType
+         * @function
+         * @param {string}
+         * @returns {bool}
+         */
+        me.isSafeMimeType = function(mimeType) {
+            return (
+                    mimeType.startsWith('image/') && 
+                    !mimeType.includes('svg')
+                ) ||
+                mimeType.startsWith('video/') ||
+                mimeType.startsWith('audio/') ||
+                mimeType.endsWith('/pdf') ||
+                mimeType === 'text/plain';
+        }
 
         /**
          * displays the attachment
@@ -3072,7 +3111,7 @@ jQuery.PrivateBin = (function($) {
          */
         me.removeAttachmentData = function()
         {
-            files = undefined;
+            files = [];
             attachmentsData = [];
         };
 
@@ -3155,6 +3194,11 @@ jQuery.PrivateBin = (function($) {
             if (!$attachment.length) {
                 return false;
             }
+            // Check if there are actual attachment data items (not just UI elements)
+            if (attachmentsData.length > 0) {
+                return true;
+            }
+            // Also check UI elements in case data was removed but UI wasn't updated
             return [...$attachment.children()].length > 0;
         };
 
@@ -3168,10 +3212,8 @@ jQuery.PrivateBin = (function($) {
          */
         me.hasAttachmentData = function()
         {
-            if ($attachment.length) {
-                return true;
-            }
-            return false;
+            // Check if there are actual attachment data items (not just UI elements)
+            return attachmentsData.length > 0;
         };
 
         /**
@@ -4187,6 +4229,10 @@ jQuery.PrivateBin = (function($) {
                     triggerEmailSend(emailBody);
                 }
 
+                $emailconfirmmodal.on('shown.bs.modal', () => {
+                    $emailconfirmTimezoneUtc.trigger('focus');
+                });
+
                 $emailconfirmTimezoneCurrent.off('click.sendEmailCurrentTimezone');
                 $emailconfirmTimezoneCurrent.on('click.sendEmailCurrentTimezone', sendEmailAndHideModal);
                 $emailconfirmTimezoneUtc.off('click.sendEmailUtcTimezone');
@@ -4707,16 +4753,17 @@ jQuery.PrivateBin = (function($) {
             $fileRemoveButton.click(removeAttachment);
             $qrCodeLink.click(displayQrCode);
 
-            // bootstrap template drop downs
-            $('ul.dropdown-menu li a', $('#expiration').parent()).click(updateExpiration);
-            $('ul.dropdown-menu li a', $('#formatter').parent()).click(updateFormat);
-            // bootstrap5 & page drop downs
-            $('#pasteExpiration').on('change', function() {
-                pasteExpiration = Model.getExpirationDefault();
-            });
-            $('#pasteFormatter').on('change', function() {
-                PasteViewer.setFormat(Model.getFormatDefault());
-            });
+            if (Helper.isBootstrap5()) {
+                $('#pasteExpiration').on('change', function() {
+                    pasteExpiration = Model.getExpirationDefault();
+                });
+                $('#pasteFormatter').on('change', function() {
+                    PasteViewer.setFormat(Model.getFormatDefault());
+                });
+            } else {
+                $('ul.dropdown-menu li a', $('#expiration').parent()).click(updateExpiration);
+                $('ul.dropdown-menu li a', $('#formatter').parent()).click(updateFormat);
+            }
 
             // initiate default state of checkboxes
             changeBurnAfterReading();
@@ -5179,7 +5226,7 @@ jQuery.PrivateBin = (function($) {
             const plainText = Editor.getText(),
                   format    = PasteViewer.getFormat(),
                   // the methods may return different values if no files are attached (null, undefined or false)
-                  files     = TopNav.getFileList() || AttachmentViewer.getFiles() || AttachmentViewer.hasAttachment();
+                  files     = TopNav.getFileList() || AttachmentViewer.getFiles() || AttachmentViewer.hasAttachmentData();
 
             // do not send if there is no data
             if (plainText.length === 0 && !files) {
@@ -5225,7 +5272,7 @@ jQuery.PrivateBin = (function($) {
                 };
             if (attachmentsData.length) {
                 cipherMessage['attachment'] = attachmentsData;
-                cipherMessage['attachment_name'] = AttachmentViewer.getFiles().map((fileInfo => fileInfo.name));
+                cipherMessage['attachment_name'] = AttachmentViewer.getFiles().map(fileInfo => fileInfo.name);
             } else if (AttachmentViewer.hasAttachment()) {
                 // fall back to cloned part
                 let attachments = AttachmentViewer.getAttachments();
@@ -5519,10 +5566,7 @@ jQuery.PrivateBin = (function($) {
         const me = {};
 
         let copyButton,
-            copyShortcutButton,
             copyLinkButton,
-            copyIcon,
-            successIcon,
             shortcutHint,
             url;
 
@@ -5534,11 +5578,10 @@ jQuery.PrivateBin = (function($) {
          * @function
          */
         function handleCopyButtonClick() {
-            $(copyButton).add(copyShortcutButton).click(function() {
+            $(copyButton).click(function () {
                 const text = PasteViewer.getText();
                 saveToClipboard(text);
 
-                toggleSuccessIcon();
                 showAlertMessage('Document copied to clipboard');
             });
         }
@@ -5621,23 +5664,6 @@ jQuery.PrivateBin = (function($) {
         }
 
         /**
-         * Toogle success icon after copy
-         *
-         * @name CopyToClipboard.toggleSuccessIcon
-         * @private
-         * @function
-         */
-        function toggleSuccessIcon() {
-            $(copyIcon).css('display', 'none');
-            $(successIcon).css('display', 'block');
-
-            setTimeout(function() {
-                $(copyIcon).css('display', 'block');
-                $(successIcon).css('display', 'none');
-            }, 1000);
-        }
-
-        /**
          * Show keyboard shortcut hint
          *
          * @name CopyToClipboard.showKeyboardShortcutHint
@@ -5650,7 +5676,7 @@ jQuery.PrivateBin = (function($) {
         /**
          * Hide keyboard shortcut hint
          *
-         * @name CopyToClipboard.hideKeyboardShortcutHint
+         * @name CopyToClipboard.showKeyboardShortcutHint
          * @function
          */
         me.hideKeyboardShortcutHint = function () {
@@ -5675,11 +5701,8 @@ jQuery.PrivateBin = (function($) {
          * @function
          */
         me.init = function() {
-            copyButton = $('#prettyMessageCopyBtn');
-            copyShortcutButton = $('#copyShortcutHintBtn');
+            copyButton = $('#copyShortcutHintBtn');
             copyLinkButton = $('#copyLink');
-            copyIcon = $('#copyIcon');
-            successIcon = $('#copySuccessIcon');
             shortcutHint = $('#copyShortcutHint');
 
             handleCopyButtonClick();

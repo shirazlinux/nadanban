@@ -25,6 +25,7 @@ if ($SYNTAXHIGHLIGHTING) :
 endif;
 ?>
 		<noscript><link type="text/css" rel="stylesheet" href="css/noscript.css" /></noscript>
+		<?php $this->_linkTag('js/zlib-1.3.2.js'); ?>
 		<?php $this->_scriptTag('js/jquery-3.7.1.js', 'defer'); ?>
 <?php
 if ($QRCODE) :
@@ -33,7 +34,7 @@ if ($QRCODE) :
 <?php
 endif;
 ?>
-		<?php $this->_scriptTag('js/zlib-1.3.1-2.js', 'defer'); ?>
+		<?php $this->_scriptTag('js/zlib.js', 'defer'); ?>
 		<?php $this->_scriptTag('js/base-x-5.0.1.js', 'defer'); ?>
 		<?php $this->_scriptTag('js/bootstrap-5.3.8.js', 'defer'); ?>
 		<?php $this->_scriptTag('js/dark-mode-switch.js', 'defer'); ?>
@@ -49,7 +50,7 @@ if ($MARKDOWN) :
 <?php
 endif;
 ?>
-		<?php $this->_scriptTag('js/purify-3.3.0.js', 'defer'); ?>
+		<?php $this->_scriptTag('js/purify-3.4.1.js', 'defer'); ?>
 		<?php $this->_scriptTag('js/legacy.js', 'defer'); ?>
 		<?php $this->_scriptTag('js/privatebin.js', 'defer'); ?>
 		<!-- icon -->
@@ -482,16 +483,12 @@ endif;
 					<h6 id="copyShortcutHint" class="col-md-12 nav justify-content-between align-items-center mb-2 hidden">
 						<small id="copyShortcutHintText" class="d-none d-md-inline">
 							<?php
-								echo I18n::_('To copy document press on the copy button or use the clipboard shortcut <kbd>%s</kbd>+<kbd>c</kbd>', I18n::getCopyHotkey());
+								echo I18n::_("To copy document press on the copy button or use the clipboard shortcut <kbd>%s</kbd>+<kbd>c</kbd>", I18n::getCopyHotkey())
 							?>
 						</small>
 						<button type="button" id="copyShortcutHintBtn" class="btn btn-secondary ms-auto"><?php echo I18n::_('Copy'); ?></button>
 					</h6>
 					<div id="prettymessage" class="card col-md-12 hidden">
-						<button type="button" id="prettyMessageCopyBtn" class="text-secondary opacity-05-1-hover">
-							<svg id="copyIcon" fill="currentColor" aria-hidden="true"><use href="img/bootstrap-icons.svg#copy" /></svg>
-							<svg id="copySuccessIcon" class="text-success" fill="currentColor" aria-hidden="true"><use href="img/bootstrap-icons.svg#check" /></svg>
-						</button>
 						<pre id="prettyprint" dir="auto" class="card-body col-md-12 prettyprint linenums:1"></pre>
 					</div>
 					<div id="plaintext" class="col-md-12 hidden"></div>
