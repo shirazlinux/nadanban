@@ -294,7 +294,20 @@ class I18n
      */
     public static function isRtl()
     {
-        return in_array(self::$_language, array('ar', 'he'));
+        return in_array(self::$_language, array('ar', 'fa', 'he', 'ku'), true);
+    }
+
+    /**
+     * get OS-specific copy hotkey modifier key name based on user agent
+     *
+     * @access public
+     * @static
+     * @return string 'Cmd' on macOS, 'Ctrl' otherwise
+     */
+    public static function getCopyHotkey()
+    {
+        return isset($_SERVER['HTTP_USER_AGENT']) &&
+            strpos($_SERVER['HTTP_USER_AGENT'], 'Mac') !== false ? self::_('Cmd') : self::_('Ctrl');
     }
 
     /**

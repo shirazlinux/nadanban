@@ -2101,10 +2101,13 @@ jQuery.PrivateBin = (function($) {
          */
         me.createPasteNotification = function(url, deleteUrl)
         {
+            const ua = navigator.userAgent;
+            const isMac = /Mac/.test(ua);
+            const hotkey = isMac ? I18n._('Cmd') : I18n._('Ctrl');
             I18n._(
                 $('#pastelink'),
-                'Your document is <a id="pasteurl" href="%s">%s</a> <span id="copyhint">(Hit <kbd>Ctrl</kbd>+<kbd>c</kbd> to copy)</span>',
-                url, url
+                'Your document is <a id="pasteurl" href="%s">%s</a> <span id="copyhint">(Hit <kbd>%s</kbd>+<kbd>c</kbd> to copy)</span>',
+                url, url, hotkey
             );
             // save newly created element
             $pasteUrl = $('#pasteurl');
@@ -5516,6 +5519,7 @@ jQuery.PrivateBin = (function($) {
         const me = {};
 
         let copyButton,
+            copyShortcutButton,
             copyLinkButton,
             copyIcon,
             successIcon,
@@ -5530,7 +5534,7 @@ jQuery.PrivateBin = (function($) {
          * @function
          */
         function handleCopyButtonClick() {
-            $(copyButton).click(function() {
+            $(copyButton).add(copyShortcutButton).click(function() {
                 const text = PasteViewer.getText();
                 saveToClipboard(text);
 
@@ -5640,20 +5644,17 @@ jQuery.PrivateBin = (function($) {
          * @function
          */
         me.showKeyboardShortcutHint = function () {
-            I18n._(
-                shortcutHint,
-                'To copy document press on the copy button or use the clipboard shortcut <kbd>Ctrl</kbd>+<kbd>c</kbd>/<kbd>Cmd</kbd>+<kbd>c</kbd>'
-            );
+            $(shortcutHint).removeClass('hidden');
         };
 
         /**
          * Hide keyboard shortcut hint
          *
-         * @name CopyToClipboard.showKeyboardShortcutHint
+         * @name CopyToClipboard.hideKeyboardShortcutHint
          * @function
          */
         me.hideKeyboardShortcutHint = function () {
-            $(shortcutHint).html('');
+            $(shortcutHint).addClass('hidden');
         };
 
         /**
@@ -5675,10 +5676,11 @@ jQuery.PrivateBin = (function($) {
          */
         me.init = function() {
             copyButton = $('#prettyMessageCopyBtn');
+            copyShortcutButton = $('#copyShortcutHintBtn');
             copyLinkButton = $('#copyLink');
             copyIcon = $('#copyIcon');
             successIcon = $('#copySuccessIcon');
-            shortcutHint = $('#copyShortcutHintText');
+            shortcutHint = $('#copyShortcutHint');
 
             handleCopyButtonClick();
             handleCopyLinkButtonClick();

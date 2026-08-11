@@ -9,18 +9,24 @@
  */
 
 @import url("../common.css");
+
 @font-face {
-    font-family: 'vazirmatn';
-    src: url('fonts/Vazirmatn-Medium.woff2') format('woff2');
-    font-weight: 500;
-    font-style: normal;
-    font-display: swap;
+	font-family: 'vazirmatn';
+	src: url('fonts/Vazirmatn-Medium.woff2') format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
 }
 
-
-body, button, input, textarea {
-    font-family: 'vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Tahoma, Arial, sans-serif;
+body, button, input, textarea, select, .btn, .nav-link, .form-label, .dropdown-item {
+	font-family: 'vazirmatn', Tahoma, 'Segoe UI', Roboto, Arial, sans-serif;
 }
+
+/* Document content stays mono; still inherits better fallbacks under RTL */
+#message, .replymessage, #prettyprint, #plaintext {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
 .hidden {
 	display: none !important;
 }
@@ -64,26 +70,22 @@ html[dir="rtl"] #deletelink, html[dir="rtl"] #qrcodemodalClose {
 	float: left;
 }
 
+/* Space for the floating copy control (logical for LTR/RTL) */
 #prettyprint {
-	padding-right: 30px;
+	padding-inline-end: 30px;
 }
 
 #prettyMessageCopyBtn {
 	position: absolute;
 	top: 8px;
-	right: 8px;
-	left: auto;
+	inset-inline-end: 8px;
+	inset-inline-start: auto;
 	width: 20px;
 	height: 20px;
 	padding: 0;
 	background: none;
 	border: none;
 	z-index: 1;
-}
-
-html[dir="rtl"] #prettyMessageCopyBtn {
-	left: 8px;
-	right: auto;
 }
 
 #prettyMessageCopyBtn svg {
@@ -98,4 +100,42 @@ html[dir="rtl"] #prettyMessageCopyBtn {
 
 #sendbutton svg {
 	transform: translateY(1.5px);
+}
+
+/* RTL polish */
+html[dir="rtl"] body {
+	text-align: right;
+}
+
+html[dir="rtl"] .navbar .navbar-brand {
+	margin-inline-end: 0.5rem;
+}
+
+html[dir="rtl"] #aboutbox {
+	text-align: right;
+}
+
+html[dir="rtl"] footer .row > h5,
+html[dir="rtl"] footer .row > p {
+	text-align: right;
+}
+
+html[dir="rtl"] footer .row > p.text-center {
+	text-align: center !important;
+}
+
+/* Discussion thread border on the start side (right in RTL) */
+html[dir="rtl"] .comment {
+	border-left: none;
+	border-right: 1px solid #ccc;
+	padding-inline-start: 0.5rem;
+}
+
+/* Keep code/source blocks left-to-right for readability */
+html[dir="rtl"] #prettyprint,
+html[dir="rtl"] #plaintext pre,
+html[dir="rtl"] pre.prettyprint {
+	direction: ltr;
+	text-align: left;
+	unicode-bidi: isolate;
 }

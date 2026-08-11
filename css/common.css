@@ -8,16 +8,19 @@
  * @license   https://www.opensource.org/licenses/zlib-license.php The zlib/libpng License
  */
 
-#nickname::placeholder {
-	direction: rtl !important;
-	text-align: right;
-
-}
-
-#passwordinput::placeholder {
+/* Placeholders: only force RTL when the UI language is RTL */
+html[dir="rtl"] #nickname::placeholder,
+html[dir="rtl"] #passwordinput::placeholder,
+html[dir="rtl"] #passworddecrypt::placeholder {
 	direction: rtl;
 	text-align: right;
+	unicode-bidi: plaintext;
+}
 
+html[dir="rtl"] #nickname,
+html[dir="rtl"] #passwordinput,
+html[dir="rtl"] #passworddecrypt {
+	text-align: right;
 }
 
 #attachmentPreview {
